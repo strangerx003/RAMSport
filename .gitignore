@@ -1,0 +1,10 @@
+node_modules/
+.vercel/
+.env*
+components.json
+__pycache__/
+*.pyc
+*.pyo
+*.log
+out/
+.next/

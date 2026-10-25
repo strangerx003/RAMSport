@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.vercel/
+RAMspace_Base_UI/
+*.log
+.env*
+!.env.example
+
+.vercel
+.env*

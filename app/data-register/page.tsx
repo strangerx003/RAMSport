@@ -3,8 +3,9 @@
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import AppShell from "@/components/AppShell";
 import ExportDialog from "@/components/ExportDialog";
+import { componentAvailabilityPercent, failuresInTime, meanTimeBetweenFailures } from "@/engine/reliability";
 import { Icons } from "@/lib/icons";
-import { Asset, componentAvailabilityPercent, readAssets, saveAssets, starterAssets } from "@/lib/workspace";
+import { Asset, readAssets, saveAssets, starterAssets } from "@/lib/workspace";
 
 type ColumnKey = keyof Asset | "mtbf" | "availability" | "fit";
 const columns: { key: ColumnKey; label: string; width: number; computed?: boolean }[] = [
@@ -63,9 +64,9 @@ export default function DataRegister() {
   const exportRows = rows.map(row => Object.fromEntries(columns.map(column => [column.key, valueFor(row, column.key)])));
 
   function valueFor(row: Asset, key: ColumnKey) {
-    if (key === "mtbf") return row.lambda ? Math.round(1 / row.lambda).toLocaleString() : "—";
+    if (key === "mtbf") return row.lambda ? Math.round(meanTimeBetweenFailures(row.lambda)).toLocaleString() : "—";
     if (key === "availability") return row.lambda ? componentAvailabilityPercent(row) : "—";
-    if (key === "fit") return Math.round(row.lambda * 1e9).toLocaleString();
+    if (key === "fit") return Math.round(failuresInTime(row.lambda)).toLocaleString();
     return String(row[key]);
   }
 
@@ -122,7 +123,7 @@ export default function DataRegister() {
       <div className="sheet-scroll"><table className="excel-table"><colgroup><col style={{ width: 48 }}/>{columns.map(column => <col key={column.key} style={{ width: column.width }}/>)}</colgroup><thead><tr><th className="corner"/>{columns.map((column, index) => <th key={column.key}><span>{String.fromCharCode(65 + index)}</span>{column.label}{column.computed && <b title="Calculated field">ƒ</b>}</th>)}</tr></thead><tbody>{filtered.map((row, rowIndex) => <tr key={row.id}><th>{rowIndex + 1}</th>{columns.map((column, columnIndex) => {
         const active = selected.row === rowIndex && selected.col === columnIndex;
         const raw = column.key in row ? String(row[column.key as keyof Asset]) : valueFor(row, column.key);
-        return <td key={column.key} className={`${active ? "selected" : ""} ${column.computed ? "computed" : ""}`} onClick={() => setSelected({ row: rowIndex, col: columnIndex })}>{column.computed ? <span>{valueFor(row, column.key)}</span> : column.key === "status" ? <select value={raw} onChange={event => update(rowIndex, "status", event.target.value)}><option>Draft</option><option>In review</option><option>Validated</option></select> : column.key === "criticality" ? <select value={raw} onChange={event => update(rowIndex, "criticality", event.target.value)}><option>Operational</option><option>Mission critical</option><option>Safety critical</option></select> : <input value={raw} type={["qty", "lambda", "mttr", "mission"].includes(column.key) ? "number" : "text"} step="any" onChange={event => update(rowIndex, column.key as keyof Asset, event.target.value)}/>}</td>;
+        return <td key={column.key} className={`${active ? "selected" : ""} ${column.computed ? "computed" : ""}`} onClick={() => setSelected({ row: rowIndex, col: columnIndex })}>{column.computed ? <span>{valueFor(row, column.key)}</span> : column.key === "status" ? <select value={raw} onChange={event => update(rowIndex, "status", event.target.value)}><option>Draft</option><option>In review</option><option>Validated</option></select> : column.key === "criticality" ? <select value={raw} onChange={event => update(rowIndex, "criticality", event.target.value)}><option>Operational</option><option>Mission critical</option><option>Safety critical</option></select> : <input value={raw} type={["qty", "mission"].includes(column.key) ? "number" : "text"} inputMode={["lambda", "mttr"].includes(column.key) ? "decimal" : undefined} step="any" onChange={event => update(rowIndex, column.key as keyof Asset, event.target.value)}/>}</td>;
       })}</tr>)}</tbody></table></div>
       <div className="sheet-tabs"><button className="active">Component Register</button><span>{filtered.length} components · {saved ? "All changes saved" : "Unsaved changes"}</span></div>
     </section>

@@ -2,25 +2,22 @@
   "name": "ramsport",
   "version": "2.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "start:standalone": "node .next/standalone/server.js",
-    "test:api": "node --test tests/api.test.mjs",
-    "test:ui": "node --test tests/ui.test.mjs",
-    "test": "npm run test:api && npm run test:ui"
+    "start": "next dev"
   },
   "dependencies": {
     "docx": "^9.12.0",
+    "exceljs": "^4.4.0",
     "html-to-image": "^1.11.13",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.9",
     "next": "16.4.2",
     "pptxgenjs": "^4.0.1",
     "react": "19.3.1",
-    "react-dom": "19.3.1",
-    "xlsx": "^0.18.5"
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

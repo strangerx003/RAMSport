@@ -1,1 +1,16 @@
-{"projectId":"prj_TF8mbD4jsNiH5zycZ79fcHZeimQ2","orgId":"team_IwgbEnAzxjsYdH729jOrhjma","projectName":"ramsport"}
+{
+  "projectId": "prj_TF8mbD4jsNiH5zycZ79fcHZeimQ2",
+  "orgId": "team_IwgbEnAzxjsYdH729jOrhjma",
+  "projectName": "ramsport",
+  "settings": {
+    "createdAt": 1791634917316,
+    "framework": "nextjs",
+    "devCommand": "npm run dev",
+    "installCommand": "npm install",
+    "buildCommand": "npm run build",
+    "outputDirectory": "out",
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}

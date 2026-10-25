@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Icons } from "@/lib/icons";
+import { readAccountSession, SESSION_KEY } from "@/lib/account";
 
 const nav = [
   { href: "/dashboard", label: "Projects", icon: Icons.grid },
@@ -28,13 +29,13 @@ export default function AppShell({ children, title, eyebrow, actions }: { childr
   const [navSearch, setNavSearch] = useState("");
 
   useEffect(() => {
-    const session = window.localStorage.getItem("ramsport-session");
-    if (!session) { router.replace("/login"); return; }
-    try { setUser(JSON.parse(session).username || "RAMS User"); } catch { /* fallback */ }
+    const session = readAccountSession();
+    if (!session) { router.replace("/"); return; }
+    setUser(session.username || "RAMS User");
     setReady(true);
   }, [router]);
 
-  function logout() { window.localStorage.removeItem("ramsport-session"); router.replace("/login"); }
+  function logout() { window.localStorage.removeItem(SESSION_KEY); router.replace("/"); }
   if (!ready) return <div className="boot-screen"><div className="brand-mark small">R</div><span>Loading RAMSport…</span></div>;
 
   const searchResults = navSearch.trim() ? searchableItems.filter(item => item.label.toLowerCase().includes(navSearch.toLowerCase())).slice(0, 7) : [];
@@ -42,9 +43,9 @@ export default function AppShell({ children, title, eyebrow, actions }: { childr
     <aside className="sidebar">
       <div className="brand"><div className="brand-mark">R</div><div><strong>RAMSport</strong><span>Engineering Suite</span></div></div>
       <label className="sidebar-search"><Icons.search/><input value={navSearch} onChange={event => setNavSearch(event.target.value)} placeholder="Search files and tools"/></label>
-      {searchResults.length > 0 && <div className="sidebar-results">{searchResults.map((item, index) => { const ResultIcon = item.icon; return <Link href={item.href} key={`${item.label}-${index}`} onClick={() => setNavSearch("")}><ResultIcon/><span>{item.label}</span></Link>; })}</div>}
+      {searchResults.length > 0 && <div className="sidebar-results">{searchResults.map((item, index) => { const ResultIcon = item.icon; return <Link href={item.href} prefetch={false} key={`${item.label}-${index}`} onClick={() => setNavSearch("")}><ResultIcon/><span>{item.label}</span></Link>; })}</div>}
       <div className="workspace-label">TOOLS</div>
-      <nav>{nav.map(item => { const ActiveIcon = item.icon; const active = pathname === item.href; return <Link key={item.href} href={item.href} className={active ? "nav-item active" : "nav-item"}><ActiveIcon/><span>{item.label}</span>{active && <i/>}</Link>; })}</nav>
+      <nav>{nav.map(item => { const ActiveIcon = item.icon; const active = pathname === item.href; return <Link key={item.href} href={item.href} prefetch={false} className={active ? "nav-item active" : "nav-item"}><ActiveIcon/><span>{item.label}</span>{active && <i/>}</Link>; })}</nav>
       <div className="sidebar-spacer"/>
       <div className="sidebar-account"><span className="avatar">{user.slice(0, 2).toUpperCase()}</span><span className="user-copy"><strong>{user}</strong><small>My account</small></span><button onClick={logout} title="Sign out"><Icons.logout/></button></div>
     </aside>

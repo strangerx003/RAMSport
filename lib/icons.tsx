@@ -22,6 +22,7 @@ export const Icons = {
   more: (p: IconProps) => <Icon {...p}><circle cx="5" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/></Icon>,
   logout: (p: IconProps) => <Icon {...p}><path d="M10 17l5-5-5-5M15 12H3M14 3h7v18h-7"/></Icon>,
   pointer: (p: IconProps) => <Icon {...p}><path d="m5 3 14 9-7 2-3 7L5 3Z"/><path d="m12 14 5 5"/></Icon>,
+  pan: (p: IconProps) => <Icon {...p}><path d="M8 11V6a2 2 0 0 1 4 0v4-6a2 2 0 0 1 4 0v6-4a2 2 0 0 1 4 0v7c0 5-3 8-8 8h-1c-3 0-5-2-7-5l-2-3a2 2 0 0 1 3-2l3 3"/></Icon>,
   block: (p: IconProps) => <Icon {...p}><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 12H1M23 12h-2"/></Icon>,
   link: (p: IconProps) => <Icon {...p}><path d="M10 13a5 5 0 0 0 7.1.1l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"/><path d="M14 11a5 5 0 0 0-7.1-.1l-2 2A5 5 0 0 0 12 20l1.1-1.1"/></Icon>,
   line: (p: IconProps) => <Icon {...p}><path d="M4 12h16"/></Icon>,

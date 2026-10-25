@@ -24,10 +24,18 @@ export type DiagramNode = {
   mission?: number;
 };
 
-export type DiagramEdge = { from: number; to: number; style: "straight" | "elbow" };
+export type DiagramEdge = {
+  from: number;
+  to: number;
+  style: "straight" | "elbow";
+  waypoint?: { x: number; y: number };
+  fromSide?: "left" | "right" | "top" | "bottom";
+  toSide?: "left" | "right" | "top" | "bottom";
+};
 export type DiagramState = { nodes: DiagramNode[]; edges: DiagramEdge[] };
+export type DiagramReportRow = { reference: string; component: string; type: string; failureRate: string; mtbf: string; mttr: string; availability: string };
 
-export const REGISTER_KEY = "ramsport-register";
+export const REGISTER_KEY = "register";
 export const REGISTER_UPDATED_EVENT = "ramsport-register-updated";
 
 export const starterAssets: Asset[] = [
@@ -41,36 +49,38 @@ export const starterAssets: Asset[] = [
 export function readAssets(): Asset[] {
   if (typeof window === "undefined") return starterAssets;
   try {
-    const saved = window.localStorage.getItem(REGISTER_KEY);
+    const key = accountStorageKey(REGISTER_KEY);
+    if (!key) return starterAssets;
+    const saved = window.localStorage.getItem(key);
     const parsed = saved ? JSON.parse(saved) : null;
     return Array.isArray(parsed) ? parsed : starterAssets;
   } catch { return starterAssets; }
 }
 
 export function saveAssets(assets: Asset[]) {
-  window.localStorage.setItem(REGISTER_KEY, JSON.stringify(assets));
+  const key = accountStorageKey(REGISTER_KEY);
+  if (!key) return;
+  window.localStorage.setItem(key, JSON.stringify(assets));
   window.dispatchEvent(new CustomEvent(REGISTER_UPDATED_EVENT, { detail: assets }));
 }
 
-export function componentAvailability(asset: Pick<Asset, "lambda" | "mttr">) {
-  return asset.lambda > 0 ? 1 / (1 + asset.lambda * asset.mttr) : 1;
-}
-
-export function componentAvailabilityPercent(asset: Pick<Asset, "lambda" | "mttr">) {
-  return `${(componentAvailability(asset) * 100).toFixed(5)}%`;
-}
-
-export function diagramStorageKey(mode: "rbd" | "fta") { return `ramsport-${mode}-diagram`; }
+export function diagramStorageKey(mode: "rbd" | "fta") { return accountStorageKey(`${mode}-diagram`); }
 
 export function readDiagram(mode: "rbd" | "fta", fallback: DiagramState): DiagramState {
   if (typeof window === "undefined") return fallback;
   try {
-    const saved = window.localStorage.getItem(diagramStorageKey(mode));
+    const key = diagramStorageKey(mode);
+    if (!key) return fallback;
+    const saved = window.localStorage.getItem(key);
     const parsed = saved ? JSON.parse(saved) : null;
     return parsed && Array.isArray(parsed.nodes) && Array.isArray(parsed.edges) ? parsed : fallback;
   } catch { return fallback; }
 }
 
 export function saveDiagram(mode: "rbd" | "fta", diagram: DiagramState) {
-  window.localStorage.setItem(diagramStorageKey(mode), JSON.stringify(diagram));
+  const key = diagramStorageKey(mode);
+  if (!key) return;
+  window.localStorage.setItem(key, JSON.stringify(diagram));
 }
+import { accountStorageKey } from "./account";
+

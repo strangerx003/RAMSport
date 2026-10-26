@@ -1,12 +1,6 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "out",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/login",
-      "permanent": false
-    }
-  ]
+  "buildCommand": "npm run build",
+  "trailingSlash": true
 }
